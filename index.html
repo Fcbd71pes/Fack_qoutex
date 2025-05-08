@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QOUTEX_FACK Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a, #1e1e1e);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #ff0044;
+      text-shadow: 0 0 10px #ff0044;
+      text-align: center;
+    }
+
+    .card {
+      background: #111111;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #ff004450;
+      max-width: 500px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      background-color: #ff0044;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .output {
+      white-space: pre-wrap;
+      background: #1f1f1f;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    #ad-top, #ad-middle, #ad-bottom {
+      margin: 15px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Popunder Script -->
+  <script type='text/javascript' src='//pl26593931.profitableratecpm.com/36/b3/75/36b3753ef6cd1e4cd4ad0f256084fb8a.js'></script>
+
+  <!-- Social Bar -->
+  <script type='text/javascript' src='//pl26592027.profitableratecpm.com/34/d1/fa/34d1fae014b2c8b528bc427996408928.js'></script>
+
+  <!-- Ad Top: Banner 300x250 -->
+  <div id="ad-top">
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '4354cc64e52601b2638a662b9a0b4ba9',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/4354cc64e52601b2638a662b9a0b4ba9/invoke.js"></script>
+  </div>
+
+  <h1>QOUTEX_FACK Dashboard</h1>
+
+  <!-- Market Section -->
+  <div class="card">
+    <h2>📊 Market Data</h2>
+    <select id="market-select">
+      <option value="EUR/USD">EUR/USD</option>
+      <option value="GBP/USD">GBP/USD</option>
+      <option value="USD/JPY">USD/JPY</option>
+      <option value="BTC/USD">BTC/USD</option>
+      <option value="XAU/USD">XAU/USD</option>
+    </select>
+    <button onclick="getSignal()">Get Signal</button>
+    <div id="market-output" class="output">Select a market and click Get Signal.</div>
+  </div>
+
+  <!-- Ad Middle: Native Banner -->
+  <div id="ad-middle">
+    <script async="async" data-cfasync="false" src="//pl26593913.profitableratecpm.com/424bad1b1df85e75bd8e61c492c7e942/invoke.js"></script>
+    <div id="container-424bad1b1df85e75bd8e61c492c7e942"></div>
+  </div>
+
+  <!-- News Section -->
+  <div class="card">
+    <h2>📰 Market News</h2>
+    <button onclick="getNews()">Refresh News</button>
+    <div id="news-output" class="output">Loading news...</div>
+  </div>
+
+  <!-- Ad Bottom: Banner 320x50 -->
+  <div id="ad-bottom">
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '09ec77a6e4a8f43ffec2e6370bddc259',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/09ec77a6e4a8f43ffec2e6370bddc259/invoke.js"></script>
+  </div>
+
+  <script>
+    const TWELVE_DATA_API = "f134e2148da043f1a97fc52d9e134123";
+    const NEWS_API_KEY = "3cf7f91cd435470da3e9c9cd1189136d";
+
+    async function getSignal() {
+      const market = document.getElementById("market-select").value;
+      const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${market}&interval=1min&apikey=${TWELVE_DATA_API}`);
+      const data = await res.json();
+
+      if (data && data.values) {
+        const m = data.values[0];
+        const direction = parseFloat(m.close) > parseFloat(m.open) ? "🔼 CALL" : "🔻 PUT";
+        const time = new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Dhaka" });
+
+        const signal = `📌 Market: ${market}
+⏰ Time: ${time}
+🔍 Open: ${m.open}
+🔍 Close: ${m.close}
+📈 Signal: ${direction}`;
+
+        document.getElementById("market-output").innerText = signal;
+      } else {
+        document.getElementById("market-output").innerText = "⚠️ Market data unavailable.";
+      }
+    }
+
+    async function getNews() {
+      const res = await fetch(`https://newsapi.org/v2/top-headlines?category=business&language=en&apiKey=${NEWS_API_KEY}`);
+      const data = await res.json();
+
+      if (data && data.articles) {
+        const news = data.articles.slice(0, 3).map(n => `📰 ${n.title} (${n.source.name})`).join("\n\n");
+        document.getElementById("news-output").innerText = news;
+      } else {
+        document.getElementById("news-output").innerText = "⚠️ No latest news found.";
+      }
+    }
+
+    getNews();
+  </script>
+</body>
+</html>
